@@ -15,4 +15,6 @@ public interface StorageService<T> {
 
     Collection<T> readAll();
 
+    void deleteAll();
+
 }

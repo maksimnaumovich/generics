@@ -1,4 +1,4 @@
-package com.itstep.naumovich.model;
+package com.itstep.naumovich;
 
 import com.itstep.naumovich.StorageService;
 
@@ -13,6 +13,12 @@ import java.util.regex.Pattern;
  * Created by admin on 05.02.2019.
  */
 public class GenericStorageService<T> implements StorageService<T> {
+
+    private Class<T> clazz;
+
+    public GenericStorageService(Class<T> clazz) {
+        this.clazz = clazz;
+    }
 
     @Override
     public String save(T object) {
@@ -59,20 +65,42 @@ public class GenericStorageService<T> implements StorageService<T> {
         boolean directory = fileToScan.isDirectory();
 
         if (directory) {
-            File[] files = fileToScan.listFiles((file, filename) -> {
-                if (file.isDirectory()) {
-                    return false;
-                }
-                return filename.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
-            });
+            File[] files = getFiles(fileToScan);
 
             List<T> result = new ArrayList<T>();
             for (File toRead : files) {
-                result.add(read(toRead.getName()));
+                T read = read(toRead.getName());
+
+                if (!clazz.isAssignableFrom(read.getClass())) {
+                    throw new ClassCastException("Cannot cast " + read.getClass() + " to " + clazz);
+                }
+
+                result.add(read);
             }
             return result;
         } else {
             throw new RuntimeException("Some magic happened");
         }
+    }
+
+    @Override
+    public void deleteAll() {
+        File fileToScan = new File("./");
+        boolean directory = fileToScan.isDirectory();
+        if (directory) {
+            File[] files = getFiles(fileToScan);
+            for (File file : files) {
+                file.delete();
+            }
+        }
+    }
+
+    private File[] getFiles(File fileToScan) {
+        return fileToScan.listFiles((file, filename) -> {
+            if (new File(filename).isDirectory()) {
+                return false;
+            }
+            return filename.matches("[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}");
+        });
     }
 }

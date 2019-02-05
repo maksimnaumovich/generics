@@ -1,9 +1,11 @@
 package com.itstep.naumovich.model;
 
+import java.io.Serializable;
+
 /**
  * Created by admin on 05.02.2019.
  */
-public class Fuel {
+public class Fuel implements Serializable {
 
     private Integer octaneNumber;
     private Integer quantity;

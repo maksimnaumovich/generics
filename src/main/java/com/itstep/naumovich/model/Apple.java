@@ -1,9 +1,11 @@
 package com.itstep.naumovich.model;
 
+import java.io.Serializable;
+
 /**
  * Created by admin on 05.02.2019.
  */
-public class Apple {
+public class Apple implements Serializable {
 
     private String color;
     private Integer weight;
@@ -19,6 +21,7 @@ public class Apple {
     public String getColor() {
         return color;
     }
+
 
     public void setColor(String color) {
         this.color = color;
